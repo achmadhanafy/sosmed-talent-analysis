@@ -1,0 +1,450 @@
+{
+  "name": "Talent Selection",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Identify the TikTok talent at {{ $json.sosmedUrl }} to promote {{ $json.products }}; use the Profiles API to retrieve bio, total likes, and follower count; use the Recent Videos API to fetch the last 10 videos with caption, total views, and total likes, then please give summary in english as plain HTML (no styles or props) contains summary description without image and table recent 10 videos",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1824,
+        0
+      ],
+      "id": "6c7c8394-2e7e-4aff-9bbc-2c4bd2c86877",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1584,
+        192
+      ],
+      "id": "5125a1f7-7054-433a-86f4-1c8b2c640320",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "omkKytopf2DbBhM4",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1728,
+        192
+      ],
+      "id": "9d6bd61a-6667-4d0b-aecd-e60821d484ec",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"mediaUrl\":\"https://www.tiktok.com/@putrisptanggrni\",\n  \"name\":\"Putri Septia\",\n  \"follower\": 20000,\n  \"avatar\": \"https://p16-common-sign-va.tiktokcdn-us.com/tos-maliva-avt-0068/75e40e57f60e952b8e199793cfc61c29~tplv-tiktokx-cropcenter:1080:1080.jpeg?dr=9640&refresh_token=4e32472a&x-expires=1757044800&x-signature=kLejZUSKpMpERL740j6jq6Hs9%2BU%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=81f88b70&idc=useast5\",\n  \"likes\":36000,\n  \"score\": 8,\n  \"recentVideosTotalComments\":100,\n  \"recentVideosTotalViews\":1000,\n  \"isRecommendation\": true,\n  \"analysis_summary\": \"<b>Profile Summary</b><br>Username: Syafiq (<a href='https://www.tiktok.com/@syafiqrizaalfatih' target='_blank'>@syafiqrizaalfatih</a>)<br>Followers: 22<br>Total Likes: 8<br>Bio: (No bio provided)<br><b>Content Analysis</b><br>The account has posted 10 videos in total.<br>Recent 10 videos have garnered 546 views, 9 total likes, and 0 comments.<br>Top performing video reached 250 views.<br><br><b>Recent 10 Videos</b><br><table><tr><th>No.</th><th>Caption</th><th>Views</th><th>Likes</th></tr><tr><td>1</td><td></td><td>4</td><td>0</td></tr><tr><td>2</td><td></td><td>16</td><td>1</td></tr><tr><td>3</td><td></td><td>4</td><td>1</td></tr><tr><td>4</td><td></td><td>18</td><td>1</td></tr><tr><td>5</td><td></td><td>209</td><td>1</td></tr><tr><td>6</td><td></td><td>9</td><td>0</td></tr><tr><td>7</td><td></td><td>10</td><td>1</td></tr><tr><td>8</td><td>@Putri Septia Anggraini </td><td>13</td><td>0</td></tr><tr><td>9</td><td></td><td>250</td><td>1</td></tr><tr><td>10</td><td></td><td>13</td><td>2</td></tr></table><br><b>Recommendation & Suitability for Baby Care Product Promotion</b><br>This account currently has low engagement and follower count. If targeting a micro-influencer or a testimonial strategy, it could be considered for community-based promotion or authentic user-generated content. However, for broader audience reach and campaign effectiveness, this profile may not provide significant impact for Baby Care product promotion unless combined with other micro-influencers or focused local campaigns.\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2112,
+        192
+      ],
+      "id": "137c7771-584a-43f6-b85f-c6aa8876f439",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "jsCode": "function randomId(length = 16) {\n  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';\n  let result = '';\n  for (let i = 0; i < length; i++) {\n    result += chars.charAt(Math.floor(Math.random() * chars.length));\n  }\n  return result;\n}\n\nfunction extractUsername(url){\n  // Method 1: Using regex\n  const match = url.match(/tiktok\\.com\\/@([^\\/?]+)/);\n  const username = match ? match[1] : null;\n  \n  return username\n}\n\nreturn [\n  {\n    json: {\n      sessionId: randomId(32),\n      id: extractUsername($input.first().json.body.sosmedUrl),\n      sosmedUrl: $input.first().json.body.sosmedUrl,\n      products: $input.first().json.body.products// 32-char string\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1648,
+        0
+      ],
+      "id": "e8ea1ede-a019-4f9c-a896-c9d60541d4f1",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "url": "https://api.scrapecreators.com/v3/tiktok/profile-videos",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "handle",
+              "value": "={{ $('Code').item.json.id }}"
+            },
+            {
+              "name": "amount",
+              "value": "10"
+            },
+            {
+              "name": "trim",
+              "value": "true"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "4rbdGdotqXMyv5gKK73sNITQL012"
+            }
+          ]
+        },
+        "options": {},
+        "optimizeResponse": true,
+        "dataField": "=",
+        "fieldsToInclude": "selected",
+        "fields": "=statistics, desc"
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        2000,
+        192
+      ],
+      "id": "e69b2f19-dd41-47ee-9a8b-6937ed0d0cb3",
+      "name": "Recent Videos API"
+    },
+    {
+      "parameters": {
+        "url": "https://api.scrapecreators.com/v1/tiktok/profile",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "handle",
+              "value": "={{ $('Code').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "4rbdGdotqXMyv5gKK73sNITQL012"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1872,
+        192
+      ],
+      "id": "07e64435-3774-4986-b193-fded4e669a4c",
+      "name": "Profiles API"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1eSuw70rBUNlqnJowDjLH6l0FwIU2YAX0fzhmTz1sct0",
+          "mode": "list",
+          "cachedResultName": "Talen Result",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eSuw70rBUNlqnJowDjLH6l0FwIU2YAX0fzhmTz1sct0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eSuw70rBUNlqnJowDjLH6l0FwIU2YAX0fzhmTz1sct0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "media url": "={{ $('Code').item.json.sosmedUrl }}",
+            "name": "={{ $json.output.name }}",
+            "follower": "={{ $json.output.follower }}",
+            "likes": "={{ $json.output.likes }}",
+            "score": "={{ $json.output.score }}",
+            "recent videos total comments": "={{ $json.output.recentVideosTotalComments }}",
+            "recent videos total views": "={{ $json.output.recentVideosTotalViews }}",
+            "is recommend": "={{ $json.output.isRecommendation }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "media url",
+              "displayName": "media url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "follower",
+              "displayName": "follower",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "likes",
+              "displayName": "likes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recent videos total comments",
+              "displayName": "recent videos total comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recent videos total views",
+              "displayName": "recent videos total views",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "is recommend",
+              "displayName": "is recommend",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1552,
+        400
+      ],
+      "id": "fa822d9a-641a-42ce-955f-6f2a60888e33",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bDbfmlHOpWWYn31I",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"data\": {\n    \"mediaUrl\": \"{{ $('Code').item.json.sosmedUrl }}\",\n    \"name\": \"{{ $json.output.name }}\",\n    \"avatar\": \"{{ $json.output.avatar }}\",\n    \"followers_count\": {{ $json.output.follower }},\n    \"likes_count\": {{ $json.output.likes }},\n    \"score\": {{ $json.output.score }},\n    \"recent_videos_total_comments\": {{ $json.output.recentVideosTotalComments }},\n    \"recent_videos_total_views\": {{ $json.output.recentVideosTotalViews }},\n    \"isRecommended\": {{ $json.output.isRecommendation }},\n    \"analysis_summary\": {{ $json.output.analysis_summary }}\n  }\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2384,
+        0
+      ],
+      "id": "ac76f8c7-f22e-48ea-ae82-0eaae0a60079",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "talent-result/product",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1376,
+        0
+      ],
+      "id": "c1e9a860-eb74-4469-8e1d-053da21cc67b",
+      "name": "Webhook",
+      "webhookId": "02339919-00a1-46cc-9413-35c1e1dc2c6b"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      output: {\n        ...$input.first().json.output,\n      analysis_summary: JSON.stringify($input.first().json.output.analysis_summary)\n      }\n    }\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2176,
+        0
+      ],
+      "id": "e40a43d8-7507-47b6-8bdc-c916a246a4da",
+      "name": "Code1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recent Videos API": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Profiles API": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3892d137-2f74-4c7e-9cba-e7e707e832e3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d6eb9eeeeaba91ce64d303e288c765325d57e3ddfa697da5e55675ba9c9b56a2"
+  },
+  "id": "ouHBHeIzcsDFi5CQ",
+  "tags": []
+}
