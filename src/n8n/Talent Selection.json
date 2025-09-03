@@ -4,7 +4,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Identify the TikTok talent at {{ $json.sosmedUrl }} to promote {{ $json.products }}; use the Profiles API to retrieve bio, total likes, and follower count; use the Recent Videos API to fetch the last 10 videos with caption, total views, and total likes, then please give summary in english as plain HTML (no styles or props) contains summary description without image and table recent 10 videos",
+        "text": "=Identify the TikTok talent at {{ $json.sosmedUrl }} to promote {{ $json.products }}; use the Profiles API to retrieve bio, total likes, and follower count; use the Recent Videos API to fetch the last 10 videos with caption, total views, and total likes, Give score (1-10) then please give summary in english as plain HTML (no styles or props) contains summary description without image and table recent 10 videos",
         "hasOutputParser": true,
         "options": {}
       },
@@ -440,7 +440,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "3892d137-2f74-4c7e-9cba-e7e707e832e3",
+  "versionId": "93c5d53d-8830-4289-9d21-8ebda8267e14",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "d6eb9eeeeaba91ce64d303e288c765325d57e3ddfa697da5e55675ba9c9b56a2"

@@ -4,6 +4,7 @@ import {
   ChatBubbleLeftIcon,
   HeartIcon,
   PlayIcon,
+  StarIcon,
   UserGroupIcon,
 } from "@heroicons/react/16/solid";
 import Link from "next/link";
@@ -29,37 +30,32 @@ function styleAnalysisSummary(summary: string): string {
       .replace(/<tr>/g, `<tr class="even:bg-gray-50">`)
       .replace(/<b>/g, `<strong class="font-semibold text-gray-800">`)
       .replace(/<\/b>/g, "</strong>")
-    // Headings
-    .replace(
-      /<b>/g,
-      `<strong class="font-semibold text-gray-800">`
-    )
-    .replace(/<\/b>/g, "</strong>")
-    .replace(
-      /<h1>/g,
-      `<h1 class="text-2xl font-bold text-gray-900 mt-4 mb-2">`
-    )
-    .replace(
-      /<h2>/g,
-      `<h2 class="text-xl font-bold text-gray-800 mt-3 mb-2">`
-    )
-    .replace(
-      /<h3>/g,
-      `<h3 class="text-lg font-semibold text-gray-700 mt-2 mb-1">`
-    )
+      // Headings
+      .replace(/<b>/g, `<strong class="font-semibold text-gray-800">`)
+      .replace(/<\/b>/g, "</strong>")
+      .replace(
+        /<h1>/g,
+        `<h1 class="text-2xl font-bold text-gray-900 mt-4 mb-2">`
+      )
+      .replace(
+        /<h2>/g,
+        `<h2 class="text-xl font-bold text-gray-800 mt-3 mb-2">`
+      )
+      .replace(
+        /<h3>/g,
+        `<h3 class="text-lg font-semibold text-gray-700 mt-2 mb-1">`
+      )
 
-    // Paragraphs
-    .replace(
-      /<p>/g,
-      `<p class="text-gray-700 leading-relaxed mb-3">`
-    )
-
+      // Paragraphs
+      .replace(/<p>/g, `<p class="text-gray-700 leading-relaxed mb-3">`)
   );
 }
 
 export default function ResultPages({ tiktokUrl, productName }: Props) {
-  const {isFetching, isError, data} = useAnalyzeTalentQuery({products: productName, sosmedUrl: tiktokUrl},{skip: !tiktokUrl || !productName})
-
+  const { isFetching, isError, data } = useAnalyzeTalentQuery(
+    { products: productName, sosmedUrl: tiktokUrl },
+    { skip: !tiktokUrl || !productName }
+  );
 
   if (isFetching) {
     return (
@@ -101,7 +97,18 @@ export default function ResultPages({ tiktokUrl, productName }: Props) {
     );
   }
 
-  const {mediaUrl,avatar, name, followers_count, likes_count, recent_videos_total_comments, recent_videos_total_views, isRecommended, analysis_summary} = data?.data || {}
+  const {
+    mediaUrl,
+    avatar,
+    name,
+    followers_count,
+    likes_count,
+    recent_videos_total_comments,
+    recent_videos_total_views,
+    isRecommended,
+    analysis_summary,
+    score,
+  } = data?.data || {};
 
   return (
     <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
@@ -126,6 +133,7 @@ export default function ResultPages({ tiktokUrl, productName }: Props) {
           </div>
         </div>
 
+        {/* Score */}
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <Card
@@ -177,6 +185,22 @@ export default function ResultPages({ tiktokUrl, productName }: Props) {
           {isRecommended
             ? "✅ Recommended for your product"
             : "⚠️ Not Recommended for broad campaigns"}
+        </div>
+        {/* Score */}
+         <div className="flex justify-center">
+          <Card
+            topContent={
+              <div className="flex gap-1">
+                {Array.from({
+                  length: Math.max(1, Math.round((score ?? 0) / 2)),
+                }).map((_, i) => (
+                  <StarIcon key={i} className="w-8 h-8" color="orange" />
+                ))}
+              </div>
+            }
+            label="Score"
+            value={`${score?.toString() ?? "0"}/10`}
+          />
         </div>
 
         {/* AI Analysis Summary */}

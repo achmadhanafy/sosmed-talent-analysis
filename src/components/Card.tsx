@@ -8,7 +8,7 @@ interface Props {
 
 function Card({label, value, topContent}:Props) {
   return (
-    <div className="p-4 bg-gray-50 rounded-md shadow-sm">
+    <div className="p-4 bg-gray-50 rounded-md shadow-sm text-center">
       {topContent}
       <p className="text-lg font-bold text-black">{value}</p>
       <p className="text-sm text-gray-600">{label}</p>
